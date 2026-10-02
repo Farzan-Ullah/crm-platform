@@ -50,6 +50,17 @@ export const initCampaignService = async () => {
     return;
   }
 
+  const hasRedis = Boolean(
+    ENV.REDIS_URL ||
+    (process.env.REDIS_HOST && process.env.REDIS_HOST !== '127.0.0.1' && process.env.REDIS_HOST !== 'localhost' && process.env.REDIS_HOST !== 'none')
+  );
+
+  if (!hasRedis && process.env.NODE_ENV === 'production') {
+    logger.info('Redis not configured. Running in zero-dependency in-memory MongoDB campaign mode.');
+    startFallbackScheduler();
+    return;
+  }
+
   const getRedisOptions = () => {
     if (ENV.REDIS_URL) {
       return ENV.REDIS_URL;

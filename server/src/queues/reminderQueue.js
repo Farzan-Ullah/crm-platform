@@ -29,6 +29,17 @@ const getRedisOptions = () => {
 
 // Initialize Redis & BullMQ or start Mongo interval poller fallback
 export const initReminderService = async () => {
+  const hasRedis = Boolean(
+    ENV.REDIS_URL ||
+    (process.env.REDIS_HOST && process.env.REDIS_HOST !== '127.0.0.1' && process.env.REDIS_HOST !== 'localhost' && process.env.REDIS_HOST !== 'none')
+  );
+
+  if (!hasRedis && process.env.NODE_ENV === 'production') {
+    logger.info('Redis not configured. Running in zero-dependency in-memory MongoDB reminder mode.');
+    startFallbackScheduler();
+    return;
+  }
+
   try {
     const opts = getRedisOptions();
     redisClient = typeof opts === 'string' ? new Redis(opts, { maxRetriesPerRequest: null }) : new Redis(opts);
