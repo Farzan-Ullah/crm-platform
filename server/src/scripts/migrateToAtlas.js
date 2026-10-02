@@ -4,10 +4,15 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const LOCAL_URI = process.env.LOCAL_MONGO_URI || 'mongodb://127.0.0.1:27017/crm_platform';
-const ATLAS_URI = process.env.ATLAS_MONGO_URI || process.env.MONGO_URI;
+const ATLAS_URI = process.env.ATLAS_MONGO_URI;
 
 if (!ATLAS_URI || !ATLAS_URI.startsWith('mongodb')) {
-  console.error('Error: ATLAS_MONGO_URI or MONGO_URI must be provided in server/.env');
+  console.error('Error: ATLAS_MONGO_URI must be set in server/.env to migrate to Atlas.');
+  process.exit(1);
+}
+
+if (LOCAL_URI === ATLAS_URI) {
+  console.error('Error: Source (Local) and Target (Atlas) URIs cannot be identical.');
   process.exit(1);
 }
 
