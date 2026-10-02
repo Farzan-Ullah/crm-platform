@@ -12,6 +12,8 @@ export const ENV = {
   JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
   REDIS_HOST: process.env.REDIS_HOST || '127.0.0.1',
   REDIS_PORT: parseInt(process.env.REDIS_PORT || '6379', 10),
+  REDIS_PASSWORD: process.env.REDIS_PASSWORD || '',
+  REDIS_URL: process.env.REDIS_URL || '',
   COMPANY_NAME: process.env.COMPANY_NAME || 'NexusCRM Technologies',
   COMPANY_EMAIL: process.env.COMPANY_EMAIL || 'admin@nexuscrm.io',
 };

@@ -11,17 +11,27 @@ let redisClient = null;
 let isRedisAvailable = false;
 let fallbackInterval = null;
 
+const getRedisOptions = () => {
+  if (ENV.REDIS_URL) {
+    return ENV.REDIS_URL;
+  }
+  return {
+    host: ENV.REDIS_HOST,
+    port: ENV.REDIS_PORT,
+    password: ENV.REDIS_PASSWORD || undefined,
+    tls: (ENV.REDIS_HOST && ENV.REDIS_HOST.includes('upstash.io')) || process.env.REDIS_TLS === 'true' ? {} : undefined,
+    maxRetriesPerRequest: null,
+    enableOfflineQueue: false,
+    connectTimeout: 5000,
+    retryStrategy: () => null,
+  };
+};
+
 // Initialize Redis & BullMQ or start Mongo interval poller fallback
 export const initReminderService = async () => {
   try {
-    redisClient = new Redis({
-      host: ENV.REDIS_HOST,
-      port: ENV.REDIS_PORT,
-      maxRetriesPerRequest: null,
-      enableOfflineQueue: false,
-      connectTimeout: 2000,
-      retryStrategy: () => null, // Do not spam reconnects if offline
-    });
+    const opts = getRedisOptions();
+    redisClient = typeof opts === 'string' ? new Redis(opts, { maxRetriesPerRequest: null }) : new Redis(opts);
 
     redisClient.on('connect', () => {
       isRedisAvailable = true;
@@ -44,11 +54,7 @@ export const initReminderService = async () => {
 
 const setupBullMQ = () => {
   try {
-    const connection = {
-      host: ENV.REDIS_HOST,
-      port: ENV.REDIS_PORT,
-      maxRetriesPerRequest: null,
-    };
+    const connection = getRedisOptions();
 
     reminderQueue = new Queue('crm-reminders', { connection });
 
