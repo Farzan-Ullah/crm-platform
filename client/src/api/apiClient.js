@@ -1,12 +1,31 @@
 import axios from 'axios';
 
+const rawApiUrl = (import.meta.env.VITE_API_URL || '').trim().replace(/\/+$/, '');
+const baseURL = rawApiUrl
+  ? (rawApiUrl.endsWith('/api/v1') ? rawApiUrl : `${rawApiUrl}/api/v1`)
+  : '/api/v1';
+
 export const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api/v1` : '/api/v1',
+  baseURL,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
 });
+
+// Request Interceptor: Attach Authorization Bearer token if stored locally
+apiClient.interceptors.request.use(
+  (config) => {
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('crm_access_token');
+      if (token && !config.headers.Authorization) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 let isRefreshing = false;
 let failedQueue = [];
@@ -53,10 +72,16 @@ apiClient.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        await apiClient.post('/auth/refresh');
+        const refreshResponse = await apiClient.post('/auth/refresh');
+        if (refreshResponse?.data?.accessToken && typeof window !== 'undefined') {
+          localStorage.setItem('crm_access_token', refreshResponse.data.accessToken);
+        }
         processQueue(null);
         return apiClient(originalRequest);
       } catch (refreshErr) {
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('crm_access_token');
+        }
         processQueue(refreshErr, null);
         window.dispatchEvent(new Event('auth:unauthorized'));
         return Promise.reject(error.response?.data || refreshErr);

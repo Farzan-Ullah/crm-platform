@@ -33,7 +33,7 @@ export const getCookieOptions = (isRefresh = false) => {
   return {
     httpOnly: true,
     secure: isProduction,
-    sameSite: isProduction ? 'strict' : 'lax',
+    sameSite: isProduction ? 'none' : 'lax', // 'none' is required for cross-domain cookies (Vercel <-> Render)
     maxAge,
     path: '/',
   };

@@ -18,9 +18,15 @@ export const useAuthStore = create((set, get) => ({
           isLoading: false,
         });
       } else {
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('crm_access_token');
+        }
         set({ user: null, isAuthenticated: false, isLoading: false });
       }
     } catch (err) {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('crm_access_token');
+      }
       set({ user: null, isAuthenticated: false, isLoading: false });
     }
   },
@@ -30,6 +36,9 @@ export const useAuthStore = create((set, get) => ({
       set({ isLoading: true, error: null });
       const response = await authApi.login(credentials);
       if (response.success && response.data.user) {
+        if (response.data.accessToken && typeof window !== 'undefined') {
+          localStorage.setItem('crm_access_token', response.data.accessToken);
+        }
         set({
           user: response.data.user,
           isAuthenticated: true,
@@ -54,6 +63,9 @@ export const useAuthStore = create((set, get) => ({
     } catch (err) {
       // Continue client logout even if network fails
     } finally {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('crm_access_token');
+      }
       set({ user: null, isAuthenticated: false, isLoading: false });
     }
   },
