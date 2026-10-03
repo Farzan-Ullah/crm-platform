@@ -355,7 +355,7 @@ async function buildDocx() {
               new TableRow({
                 children: [
                   createCell('Release Version', true, 35, true),
-                  createCell('v1.0.0 (Production Release — All 10 Phases Operational)', true, 65),
+                  createCell('v1.2.0 (Enterprise Release — In-App Notifications & Session Governance)', true, 65),
                 ],
               }),
               new TableRow({
@@ -379,7 +379,7 @@ async function buildDocx() {
               new TableRow({
                 children: [
                   createCell('Test Suite Coverage', true, 35, true),
-                  createCell('87/87 Unit & Integration Test Suites Passing (100% Pass Rate)', true, 65),
+                  createCell('97/97 Unit & Integration Tests Passing across 12 Test Suites (100% Pass Rate)', true, 65),
                 ],
               }),
             ],
@@ -410,6 +410,9 @@ async function buildDocx() {
           createBullet(' Multi-item proposal generation with dynamic PDF rendering, discount approval gates, and email distribution.', 'Quotation & Document Automation:'),
           createBullet(' Campaign scheduling with 1x1 invisible pixel tracking for real-time email open and link click attribution.', 'Marketing Intelligence:'),
           createBullet(' Full audit trail logging of all user activities, status changes, and data modifications for compliance.', 'Governance & Auditing:'),
+          createBullet(' Dynamic notification center alerting agents to won deals, quote approvals, and assigned leads with unread count badges.', 'In-App Notification Center:'),
+          createBullet(' Granular profile management, password security checks, and active device session tracking with remote revocation.', 'Account & Session Governance:'),
+          createBullet(' High-level KPI widgets, visual stage-by-stage conversion funnels, prioritized deals, hot leads, and action queues.', 'Executive Command Dashboard:'),
 
           // -------------------------------------------------------------
           // SECTION 2: SYSTEM ARCHITECTURE & TOPOLOGY
@@ -564,13 +567,16 @@ async function buildDocx() {
             'Once approved, the server uses PDFKit to stream an official, formatted corporate quotation document directly to the client browser or attaches it to an outbound email.'
           ),
 
-          createHeading2('Module 8: Sales Analytics, Funnels & Forecasting'),
+          createHeading2('Module 8: Sales Analytics, Funnels & Executive Dashboard'),
           createParagraph(
-            'The reporting suite processes high-volume aggregations via MongoDB Pipelines to produce real-time executive dashboards:'
+            'The reporting suite processes high-volume aggregations via MongoDB Pipelines to produce real-time executive intelligence and interactive dashboards:'
           ),
-          createBullet(' Tracks conversion percentages and stage drop-offs from raw lead ingestion to Closed Won.', 'Full Conversion Funnel:'),
+          createBullet(' Top-level KPI cards reporting Total Open Pipeline Value, Closed Won Revenue, Active Lead count, and Deal Win Rate with historical trend markers.', 'Executive KPI Metrics:'),
+          createBullet(' Tracks conversion percentages and stage drop-offs from raw lead ingestion to Closed Won.', 'Visual Conversion Funnel:'),
           createBullet(' Monthly and quarterly revenue projections categorized into Commit, Best Case, and Pipeline cohorts.', 'Weighted Revenue Forecast:'),
-          createBullet(' Analyzes lost reasons, competitor wins, and average sales cycle lengths.', 'Win/Loss Attribution:'),
+          createBullet(' High-priority open opportunities with expected close dates and immediate status visibility.', 'Top Deals Focus:'),
+          createBullet(' Prioritized queue of due and overdue tasks with 1-click completion toggles.', 'Immediate Action Queue:'),
+          createBullet(' Top prospects graded 80-100 with direct call, email, and stage progression actions.', 'AI Hot Leads:'),
           createBullet(' Live ranking of sales representatives by closed revenue, won deals, and activity completion velocity.', 'Rep Leaderboard:'),
 
           createHeading2('Module 9: High-Volume Bulk Data Migration (CSV / Excel)'),
@@ -582,6 +588,24 @@ async function buildDocx() {
           createParagraph(
             'Every sensitive mutation (user creation, password reset, permission escalation, record deletion, bulk export) writes an immutable record to the AuditLog collection, recording Actor ID, IP Address, User Agent, Resource Type, Action, and Before/After snapshots.'
           ),
+
+          createHeading2('Module 11: Interactive In-App Notification Center'),
+          createParagraph(
+            'NexusCRM incorporates an asynchronous In-App Notification Center providing real-time situational awareness across commercial events and operational workflows:'
+          ),
+          createBullet(' Dynamic bell icon in the top navigation header featuring an unread count badge (with automatic 99+ formatting) and a quick-open dropdown panel.', 'Real-Time Notification Bell:'),
+          createBullet(' Automatically triggers in-app alerts when deals are won, leads are assigned, quotation discount requests are approved or rejected, and activity reminders trigger.', 'Workflow Event Automation:'),
+          createBullet(' Users can toggle between "All Notifications" and "Unread" filters, mark individual or all notifications as read, and remove dismissed alerts.', 'Interactive Drawer Governance:'),
+          createBullet(' Operates via a resilient 30-second interval polling architecture querying indexed MongoDB notification collections with zero WebSocket serverless disconnect overhead.', 'Lightweight Polling Engine:'),
+
+          createHeading2('Module 12: Account Profile, Security & Session Governance'),
+          createParagraph(
+            'Enterprise security extends to user-level self-service governance, accessible directly via the top-right account dropdown into dedicated settings sub-tabs:'
+          ),
+          createBullet(' Users can manage their personal identity (first name, last name, phone number, and avatar image URL) while viewing immutable enterprise metadata (email, tenant ID, and assigned RBAC role badge).', 'Profile Customization:'),
+          createBullet(' Self-service password rotation requiring current password verification and enforcing strict password complexity rules (minimum 8 characters, uppercase, lowercase, and numbers).', 'Password Security:'),
+          createBullet(' Real-time registry of all active device sessions displaying IP address, browser/OS fingerprint (User-Agent parsing), creation timestamp, and last activity date.', 'Active Session Tracking:'),
+          createBullet(' Users can remotely revoke specific suspicious device sessions or execute a "Revoke All Other Sessions" command to immediately invalidate refresh tokens across compromised devices.', 'Remote Session Revocation:'),
 
           // -------------------------------------------------------------
           // SECTION 4: REST API SPECIFICATION
@@ -714,6 +738,86 @@ async function buildDocx() {
                   createCell('High-speed streaming CSV and Excel bulk data transfers', true, 30),
                 ],
               }),
+              new TableRow({
+                children: [
+                  createCell('GET', false, 15, true),
+                  createCell('/api/v1/notifications', false, 35),
+                  createCell('Authenticated', false, 20),
+                  createCell('Paginated notifications with read/unread and type filtering', false, 30),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  createCell('GET', true, 15, true),
+                  createCell('/api/v1/notifications/unread-count', true, 35),
+                  createCell('Authenticated', true, 20),
+                  createCell('Lightweight unread count query for header navigation badge', true, 30),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  createCell('PATCH', false, 15, true),
+                  createCell('/api/v1/notifications/:id/read', false, 35),
+                  createCell('Authenticated', false, 20),
+                  createCell('Marks a specific notification as read', false, 30),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  createCell('PATCH', true, 15, true),
+                  createCell('/api/v1/notifications/mark-all-read', true, 35),
+                  createCell('Authenticated', true, 20),
+                  createCell('Marks all user notifications as read in single operation', true, 30),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  createCell('DELETE', false, 15, true),
+                  createCell('/api/v1/notifications/:id', false, 35),
+                  createCell('Authenticated', false, 20),
+                  createCell('Deletes a single notification record permanently', false, 30),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  createCell('PATCH', true, 15, true),
+                  createCell('/api/v1/auth/profile', true, 35),
+                  createCell('Authenticated', true, 20),
+                  createCell('Updates profile fields (firstName, lastName, phone, avatar)', true, 30),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  createCell('PATCH', false, 15, true),
+                  createCell('/api/v1/auth/change-password', false, 35),
+                  createCell('Authenticated', false, 20),
+                  createCell('Validates current password and sets new password', false, 30),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  createCell('GET', true, 15, true),
+                  createCell('/api/v1/auth/sessions', true, 35),
+                  createCell('Authenticated', true, 20),
+                  createCell('Lists all active device sessions with browser/IP details', true, 30),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  createCell('DELETE', false, 15, true),
+                  createCell('/api/v1/auth/sessions/:id', false, 35),
+                  createCell('Authenticated', false, 20),
+                  createCell('Revokes a specific remote device session', false, 30),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  createCell('DELETE', true, 15, true),
+                  createCell('/api/v1/auth/sessions', true, 35),
+                  createCell('Authenticated', true, 20),
+                  createCell('Revokes all other active sessions across user devices', true, 30),
+                ],
+              }),
             ],
           }),
 
@@ -798,6 +902,20 @@ async function buildDocx() {
                   createCell('Immutable security logs; TTL retention indexes', false, 35),
                 ],
               }),
+              new TableRow({
+                children: [
+                  createCell('Notification', true, 20, true),
+                  createCell('tenantId, userId, title, message, type, link, isRead, readAt, metadata', true, 45),
+                  createCell('Compound index on (tenantId, userId, isRead, createdAt)', true, 35),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  createCell('Session', false, 20, true),
+                  createCell('tenantId, userId, refreshTokenHash, ipAddress, userAgent, isValid, expiresAt, lastActiveAt', false, 45),
+                  createCell('Compound index on (userId, isValid); TTL index on expiresAt', false, 35),
+                ],
+              }),
             ],
           }),
 
@@ -839,7 +957,7 @@ async function buildDocx() {
           createHeading2('The 2-Minute Elevator Pitch'),
           createCallout(
             'Presentation Pitch Script',
-            '"NexusCRM is a full-stack, enterprise-grade B2B SaaS platform engineered using the MERN stack and React 18. Unlike academic prototype CRMs that only support basic CRUD forms, NexusCRM implements real-world enterprise patterns: strict multi-tenant boundary isolation, automated AI lead scoring, drag-and-drop Kanban revenue pipelines, quotation discount approvals with on-the-fly PDFKit document streaming, email marketing tracking pixels, and immutable audit logs. The application is backed by an automated 87-test suite and deployed across distributed cloud infrastructure."'
+            '"NexusCRM is a full-stack, enterprise-grade B2B SaaS platform engineered using the MERN stack and React 18. Unlike academic prototype CRMs that only support basic CRUD forms, NexusCRM implements real-world enterprise patterns: strict multi-tenant boundary isolation, automated AI lead scoring, drag-and-drop Kanban revenue pipelines, quotation discount approvals with on-the-fly PDFKit document streaming, email marketing tracking pixels, an interactive in-app notification center, active session governance with remote revocation, and immutable audit logs. The application is backed by an automated 97-test suite across 12 test suites and deployed across distributed cloud infrastructure."'
           ),
 
           createHeading2('Top Defense Questions & Technical Answers'),
@@ -847,6 +965,8 @@ async function buildDocx() {
           createBullet(' "JWTs are issued as HttpOnly cookies with SameSite=None and Secure=True in production to prevent XSS exfiltration. In addition, our client Axios interceptor supports an Authorization Bearer token header fallback with automatic refresh token rotation, ensuring resilience on third-party cookie restricted browsers like Safari and Chrome incognito."', 'Q2: How does the dual-authentication and token rotation mechanism work?'),
           createBullet(' "Rather than burdening the relational database with complex multi-table joins across activities, emails, and audit logs, MongoDB allows polymorphic entity references where tasks and logs dynamically associate with Leads, Contacts, or Deals. Furthermore, MongoDB aggregation pipelines allow us to compute full-funnel conversion rates and revenue forecasts in single sub-50ms database roundtrips."', 'Q3: Why MongoDB instead of PostgreSQL or MySQL?'),
           createBullet(' "To prevent single points of failure in production, we built an adaptive worker abstraction. If Redis is configured, it utilizes BullMQ for distributed Redis queues; if Redis is absent or fails, the server transparently switches to an in-memory poller against MongoDB scheduled tasks, ensuring zero downtime and zero configuration headaches for clients."', 'Q4: How does the background task and reminder queue handle zero-dependency environments?'),
+          createBullet(' "We evaluated WebSockets versus lightweight interval polling (30s) and chose polling for three architectural advantages: First, WebSockets maintain persistent stateful TCP sockets that require sticky sessions and Redis Pub/Sub adapters when horizontally scaling across serverless or containerized tiers (such as Render or AWS ECS). Second, notification checks are extremely lightweight, querying an indexed MongoDB count in sub-5ms. Third, polling is completely immune to socket drops caused by network switching, firewall timeouts, and laptop/mobile sleep modes."', 'Q5: Why did you choose interval polling over WebSockets for in-app notifications?'),
+          createBullet(' "Every login creates a cryptographically hashed refresh token record in the Session collection alongside IP and User-Agent device fingerprints. When a user changes their password, revokes a specific device session, or triggers \'Revoke All Other Sessions\', the corresponding session records are immediately invalidated in MongoDB. During token rotation, our auth service verifies the token against the active session table; any revoked token is immediately rejected with a 401 Unauthorized, eliminating session hijacking vulnerabilities."', 'Q6: How does Active Session Governance prevent token hijacking and handle remote revocation?'),
 
           new Paragraph({ spacing: { before: 600, after: 200 }, children: [] }),
 

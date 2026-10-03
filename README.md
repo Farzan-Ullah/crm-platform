@@ -77,27 +77,42 @@ Or run them individually:
 - Frontend: `npm run client` (starts on `http://localhost:5173`)
 
 ### 5. Running Automated Tests
-Run the backend test suite:
+Run the backend test suite (97 tests across 12 suites):
 
 ```bash
 npm run test:server
+# or in /server:
+npm test
 ```
 
 ---
 
-## Phase 1 & Phase 2 Capabilities
+## Comprehensive Platform Capabilities
 
-- **Multi-Tenancy & Security**: Tenant context (`tenantId`) auto-attached and enforced across users, leads, and sessions.
+- **Multi-Tenancy & Security**: Tenant context (`tenantId`) auto-attached and enforced across users, leads, deals, quotes, and sessions.
 - **Dual-Token Authentication**:
-  - `accessToken`: 15-minute validity, stored in HTTP-only cookie.
+  - `accessToken`: 15-minute validity, stored in HTTP-only cookie + Bearer header fallback.
   - `refreshToken`: 7-day validity, hashed and stored in database session with token rotation.
   - Automatic silent refresh via Axios response interceptors.
 - **Granular RBAC**: Four roles (`ADMIN`, `SALES_MANAGER`, `SALES_EXECUTIVE`, `SUPPORT_AGENT`) with permission guards.
 - **Leads Management**:
   - Full CRUD with server pagination, search, status, source, and score range filters.
-  - Bulk actions: bulk status update, bulk assignment, and bulk delete.
   - Configurable Lead Scoring Engine (+10 email, +10 phone, +10 company, +20 website inquiry, +15 executive designation, +25 referral).
   - Categorical score badges: Very Hot (80-100), Hot (60-79), Warm (30-59), Cold (0-29).
-  - Automated workload-balanced Round-Robin assignment across active sales reps.
-  - Public Web-to-Lead endpoint (`POST /api/v1/public/leads`) with rate limiting and anti-spam honeypot.
-  - User and Team administration interface in Settings.
+  - Automated Round-Robin assignment and 1-Click atomic conversion to Contact, Company, and Deal.
+- **Deals & Visual Kanban**: Drag-and-drop opportunity progression with weighted pipeline forecasting and lost-reason governance.
+- **360° Omnichannel Activities**: Polymorphic activity tracking for tasks, calls, meetings, notes, and reminders.
+- **Quotations & PDF Streaming**: Itemized proposal builder with automated discount approval gates and dynamic PDF generation via PDFKit.
+- **Executive Command Dashboard**: Real-time KPI metrics, visual conversion funnels, prioritized deals, hot leads, and action queues.
+- **Interactive In-App Notification Center**: Real-time notifications bell with unread count badges, automated workflow triggers (won deals, quote approvals, lead assignments), and drawer filtering.
+- **Account Profile & Session Governance**: Profile customization, password rotation, and active device session tracking with remote revocation.
+- **Bulk Migration**: High-volume streaming import/export via CSV and Excel.
+- **Audit Trails**: Immutable change tracking capturing Actor ID, IP, User Agent, and Before/After snapshots.
+
+---
+
+## Documentation & Presentation Guides
+
+- **Official Word Manual (.docx)**: [`NexusCRM_Enterprise_Platform_Documentation.docx`](file:///f:/CRM%20Platform/NexusCRM_Enterprise_Platform_Documentation.docx)
+- **Technical Reference Manual (Markdown)**: [`PROJECT_DOCUMENTATION.md`](file:///f:/CRM%20Platform/PROJECT_DOCUMENTATION.md)
+
