@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Menu,
   Bell,
@@ -17,6 +18,7 @@ import { ROLE_LABELS, ROLE_COLORS } from '../constants/roles.js';
 import { NotificationDropdown } from '../components/notifications/NotificationDropdown.jsx';
 
 export const Header = () => {
+  const navigate = useNavigate();
   const { user, logout, role } = useAuth();
   const { toggleSidebar, theme, toggleTheme, setMobileSidebarOpen } = useUIStore();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -129,14 +131,29 @@ export const Header = () => {
               </div>
 
               <div className="py-1">
-                <div className="flex items-center gap-2 px-4 py-2 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsDropdownOpen(false);
+                    navigate('/profile?tab=profile');
+                  }}
+                  className="flex w-full items-center gap-2 px-4 py-2 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors text-left"
+                >
                   <UserIcon className="h-4 w-4 text-slate-400" />
                   <span>Account Profile</span>
-                </div>
-                <div className="flex items-center gap-2 px-4 py-2 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer">
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsDropdownOpen(false);
+                    navigate('/profile?tab=security');
+                  }}
+                  className="flex w-full items-center gap-2 px-4 py-2 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors text-left"
+                >
                   <Shield className="h-4 w-4 text-slate-400" />
                   <span>Security & Sessions</span>
-                </div>
+                </button>
               </div>
 
               <div className="border-t border-slate-100 dark:border-slate-800 pt-1">

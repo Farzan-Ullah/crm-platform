@@ -217,3 +217,62 @@ export const getCurrentUserProfile = async (userId) => {
     tenant: tenant ? { id: tenant._id, name: tenant.name, plan: tenant.subscription?.plan } : null,
   };
 };
+
+export const updateUserProfile = async ({ userId, tenantId, firstName, lastName, phone, avatar }) => {
+  const updates = {};
+  if (firstName !== undefined) updates.firstName = firstName.trim();
+  if (lastName !== undefined) updates.lastName = lastName.trim();
+  if (phone !== undefined) updates.phone = phone.trim();
+  if (avatar !== undefined) updates.avatar = avatar.trim();
+
+  const user = await User.findOneAndUpdate(
+    { _id: userId, tenantId },
+    { $set: updates },
+    { new: true, runValidators: true }
+  ).lean();
+
+  if (!user) {
+    throw new AppError('User not found.', 404, 'NOT_FOUND');
+  }
+
+  delete user.passwordHash;
+  return user;
+};
+
+export const getUserSessions = async ({ userId, tenantId, currentRefreshToken }) => {
+  const currentTokenHash = currentRefreshToken ? hashToken(currentRefreshToken) : null;
+
+  const sessions = await Session.find({ userId, tenantId })
+    .sort({ updatedAt: -1 })
+    .lean();
+
+  return sessions.map((s) => ({
+    _id: s._id,
+    ip: s.ip || '127.0.0.1',
+    userAgent: s.userAgent || 'Web Browser',
+    isCurrent: currentTokenHash ? s.refreshTokenHash === currentTokenHash : false,
+    createdAt: s.createdAt,
+    lastActive: s.updatedAt,
+    expiresAt: s.expiresAt,
+  }));
+};
+
+export const revokeUserSession = async ({ userId, tenantId, sessionId }) => {
+  const result = await Session.findOneAndDelete({ _id: sessionId, userId, tenantId });
+  if (!result) {
+    throw new AppError('Session not found or already revoked.', 404, 'NOT_FOUND');
+  }
+  return { success: true, message: 'Session revoked successfully.' };
+};
+
+export const revokeAllOtherSessions = async ({ userId, tenantId, currentRefreshToken }) => {
+  const currentTokenHash = currentRefreshToken ? hashToken(currentRefreshToken) : null;
+  const query = { userId, tenantId };
+
+  if (currentTokenHash) {
+    query.refreshTokenHash = { $ne: currentTokenHash };
+  }
+
+  const result = await Session.deleteMany(query);
+  return { success: true, count: result.deletedCount, message: 'All other sessions have been revoked.' };
+};

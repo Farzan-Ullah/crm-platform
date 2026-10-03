@@ -20,6 +20,7 @@ import { QuotesPage } from '../pages/quotes/QuotesPage.jsx';
 import { ReportsPage } from '../pages/reports/ReportsPage.jsx';
 import { UserManagementPage } from '../pages/settings/UserManagementPage.jsx';
 import { SettingsPage } from '../pages/settings/SettingsPage.jsx';
+import { ProfilePage } from '../pages/settings/ProfilePage.jsx';
 import { AuditLogsPage } from '../pages/audit/AuditLogsPage.jsx';
 import { UpcomingPhaseView } from '../pages/common/UpcomingPhaseView.jsx';
 import { ROLES } from '../constants/roles.js';
@@ -41,6 +42,7 @@ export const AppRoutes = () => {
         }
       >
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
 
         {/* Phase 2: Leads Management & Details */}
         <Route path="/leads" element={<LeadsListPage />} />

@@ -4,6 +4,10 @@ import {
   logoutUser,
   changeUserPassword,
   getCurrentUserProfile,
+  updateUserProfile,
+  getUserSessions,
+  revokeUserSession,
+  revokeAllOtherSessions,
 } from '../services/authService.js';
 import { sendSuccess } from '../utils/apiResponse.js';
 import { getCookieOptions } from '../utils/tokenUtils.js';
@@ -104,6 +108,64 @@ export const changePassword = async (req, res, next) => {
     res.clearCookie('refreshToken', { path: '/' });
 
     return sendSuccess(res, 'Password changed successfully. Please log in with your new password.');
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const updateProfile = async (req, res, next) => {
+  try {
+    const { firstName, lastName, phone, avatar } = req.body;
+    const user = await updateUserProfile({
+      userId: req.user._id,
+      tenantId: req.tenantId,
+      firstName,
+      lastName,
+      phone,
+      avatar,
+    });
+    return sendSuccess(res, 'Profile updated successfully', { user });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const getSessions = async (req, res, next) => {
+  try {
+    const refreshToken = req.cookies?.refreshToken || req.body?.refreshToken;
+    const sessions = await getUserSessions({
+      userId: req.user._id,
+      tenantId: req.tenantId,
+      currentRefreshToken: refreshToken,
+    });
+    return sendSuccess(res, 'Active sessions retrieved', { sessions });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const revokeSession = async (req, res, next) => {
+  try {
+    const result = await revokeUserSession({
+      userId: req.user._id,
+      tenantId: req.tenantId,
+      sessionId: req.params.id,
+    });
+    return sendSuccess(res, 'Session revoked successfully', result);
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const revokeOtherSessions = async (req, res, next) => {
+  try {
+    const refreshToken = req.cookies?.refreshToken || req.body?.refreshToken;
+    const result = await revokeAllOtherSessions({
+      userId: req.user._id,
+      tenantId: req.tenantId,
+      currentRefreshToken: refreshToken,
+    });
+    return sendSuccess(res, 'All other sessions revoked', result);
   } catch (err) {
     return next(err);
   }
