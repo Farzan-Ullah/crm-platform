@@ -118,16 +118,18 @@ export const Sidebar = () => {
         </div>
       </div>
 
-      {/* Plan / Version Footer */}
+      {/* Workspace Footer */}
       {!isSidebarCollapsed && (
-        <div className="p-4 border-t border-slate-800 text-[11px] text-slate-500">
-          <div className="flex items-center justify-between mb-1">
-            <span className="font-semibold text-emerald-400">Phase 10 Complete</span>
-            <span className="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 text-[10px] font-mono">
-              v1.10.0
+        <div className="p-3.5 border-t border-slate-800 text-[11px] text-slate-500">
+          <div className="flex items-center justify-between">
+            <span className="font-semibold text-slate-300 truncate">
+              {tenant?.name || 'Enterprise CRM'}
+            </span>
+            <span className="px-1.5 py-0.5 rounded bg-indigo-950/80 text-indigo-400 text-[10px] font-semibold border border-indigo-800/40">
+              Active
             </span>
           </div>
-          <p className="truncate">Production Ready & Dockerized</p>
+          <p className="text-[10px] text-slate-500 mt-0.5 truncate">NexusCRM Platform</p>
         </div>
       )}
     </div>
