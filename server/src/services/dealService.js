@@ -4,6 +4,7 @@ import { Pipeline } from '../models/Pipeline.js';
 import { AppError } from '../utils/AppError.js';
 import { logAuditEvent } from './auditService.js';
 import { getPipelinesList } from './pipelineService.js';
+import { createNotification } from './notificationService.js';
 
 export const getDealsList = async ({
   tenantId,
@@ -533,6 +534,17 @@ export const updateDealStageOnly = async ({
   });
 
   await deal.save();
+
+  if (targetStage.isWon && deal.ownerId) {
+    createNotification({
+      tenantId,
+      userId: deal.ownerId,
+      title: 'Deal Closed Won! 🎉',
+      message: `Deal "${deal.title}" ($${(deal.value || 0).toLocaleString()}) has reached Closed Won!`,
+      type: 'deal',
+      link: `/deals/${deal._id}`,
+    }).catch(() => {});
+  }
 
   await logAuditEvent({
     tenantId,

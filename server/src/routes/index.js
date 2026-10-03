@@ -18,6 +18,7 @@ import { tenantRoutes } from './tenantRoutes.js';
 import { auditRoutes } from './auditRoutes.js';
 import { importRoutes } from './importRoutes.js';
 import { exportRoutes } from './exportRoutes.js';
+import notificationRoutes from './notificationRoutes.js';
 
 const router = express.Router();
 
@@ -43,6 +44,7 @@ router.use('/tenant', tenantRoutes);
 router.use('/audit-logs', auditRoutes);
 router.use('/import', importRoutes);
 router.use('/export', exportRoutes);
+router.use('/notifications', notificationRoutes);
 
 // Health check endpoint
 router.get('/health', (req, res) => {

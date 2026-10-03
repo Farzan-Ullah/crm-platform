@@ -6,6 +6,7 @@ import { Setting } from '../models/Setting.js';
 import { Activity } from '../models/Activity.js';
 import { AppError } from '../utils/AppError.js';
 import { ROLES } from '../constants/roles.js';
+import { createNotification } from './notificationService.js';
 
 const DEFAULT_DISCOUNT_THRESHOLD = 15; // 15% discount requires manager approval
 
@@ -307,6 +308,17 @@ export const approveQuote = async ({ tenantId, quoteId, managerUserId, managerRo
     console.error('Failed to log approval activity:', err.message);
   }
 
+  if (quote.ownerId) {
+    createNotification({
+      tenantId,
+      userId: quote.ownerId,
+      title: 'Quotation Approved',
+      message: `Quote #${quote.quoteNumber} (${quote.title}) was approved by sales management.`,
+      type: 'quote',
+      link: '/quotes',
+    }).catch(() => {});
+  }
+
   return quote;
 };
 
@@ -331,6 +343,17 @@ export const rejectQuote = async ({ tenantId, quoteId, managerUserId, managerRol
   quote.approvalDetails.rejectionReason = reason.trim();
 
   await quote.save();
+
+  if (quote.ownerId) {
+    createNotification({
+      tenantId,
+      userId: quote.ownerId,
+      title: 'Quotation Needs Revision',
+      message: `Quote #${quote.quoteNumber} was rejected: "${reason.trim()}"`,
+      type: 'quote',
+      link: '/quotes',
+    }).catch(() => {});
+  }
 
   // Activity log
   try {
